@@ -2,38 +2,35 @@
 #include <queue>
 #include <climits>
 using namespace std;
-
-auto const cmp = [](const pair<int, int> &a, const pair<int, int> &b) -> bool {
+// Ho Sy The - 20200614
+auto const prior = [] (const pair<int, int> &a, const pair<int, int> &b) -> bool {
     return a.second > b.second;
 };
 
 vector<int> dijkstra(const vector< vector< pair<int, int> > >&adj) {
     /*****************/
-    priority_queue<pair<int, int>, vector<pair<int, int> >, decltype(cmp)> pq(cmp);
+    priority_queue<pair<int, int>, vector<pair<int, int> >, decltype(prior)> pq(prior);
     int n = adj.size();
+    vector<bool> isFixed(n, false);
     vector<int> dist(n, INT_MAX);
-    vector<bool> mark(n, false);
-
-    pq.push({0, 0});
-    for(auto i: adj[0]) {
-        pq.push(i);
-    }
 
     int k = 0;
+    dist[0] = 0;
+    pq.push({0, 0});
     while(k++ < n) {
-        auto e = pq.top();
-        pq.pop();
-        dist[e.first] = e.second;
-        mark[e.first] = true;
-
-        for(auto i: adj[e.first]) {
-            if(!mark[i.first]) {
-                if(dist[i.first] > dist[e.first] + i.second) {
-                    dist[i.first] = dist[e.first] + i.second;
-                    pq.push({i.first, dist[i.first]});
-                }
-            }
+	int s = pq.top().first;
+	pq.pop();
+	
+	isFixed[s] = true;
+	for(auto i: adj[s]) {
+	    if(!isFixed[i.first]) {
+		if(dist[i.first] > dist[s] + i.second) {
+		    dist[i.first] = dist[s] + i.second;
+		    pq.push({i.first, dist[i.first]});
+		}
+    	    }
         }
+
     }
     return dist;
     /*****************/
